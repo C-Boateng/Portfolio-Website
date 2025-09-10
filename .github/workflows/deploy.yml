@@ -36,4 +36,3 @@ jobs:
         remote_path: './'
         args: '-o ConnectTimeout=5 -o StrictHostKeyChecking=no'
         sftp_only: true
-        delete_remote_files: true
