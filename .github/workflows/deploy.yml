@@ -1,0 +1,36 @@
+name: Build and Deploy Static Site via SFTP
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'  # Matches Next.js 15.2.1 setup
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build static site
+      run: npm run build
+
+    - name: Deploy to server via SFTP
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.6
+      with:
+        username: ${{ secrets.SERVER_USERNAME }}
+        server: ${{ secrets.SERVER_HOST }}
+        port: ${{ secrets.SERVER_PORT }}
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        local_path: './out/*'
+        remote_path: ${{ secrets.SERVER_DESTINATION }}
+        args: '-o ConnectTimeout=5 -o StrictHostKeyChecking=no'
